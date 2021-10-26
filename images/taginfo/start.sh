@@ -5,6 +5,7 @@ DATA_DIR=$WORKDIR/data
 UPDATE_DIR=$DATA_DIR/update
 DOWNLOAD_DIR=$DATA_DIR/download
 
+mkdir -p $DATA_DIR
 # Update dir values in taginfo-config.json
 grep -v '^ *//' $WORKDIR/taginfo/taginfo-config-example.json |
     jq '.logging.directory                   = "'$UPDATE_DIR'/log"' |
@@ -33,10 +34,10 @@ TAGINFO_PROJECT_REPO=${TAGINFO_PROJECT_REPO//\//\\/}
 sed -i -e 's/https:\/\/github.com\/taginfo\/taginfo-projects.git/'$TAGINFO_PROJECT_REPO'/g' $WORKDIR/taginfo/sources/projects/update.sh
 
 # The follow line is requiered to avoid an issue -> require cannot load such file -- sqlite3
-sed -i -e 's/run_ruby "$SRCDIR\/update_characters.rb"/ruby "$SRCDIR\/update_characters.rb"/g' $WORKDIR/taginfo/sources/db/update.sh
-sed -i -e 's/run_ruby "$SRCDIR\/import.rb"/ruby "$SRCDIR\/import.rb"/g' $WORKDIR/taginfo/sources/projects/update.sh
-sed -i -e 's/run_ruby "$SRCDIR\/parse.rb"/ruby "$SRCDIR\/parse.rb"/g' $WORKDIR/taginfo/sources/projects/update.sh
-sed -i -e 's/run_ruby "$SRCDIR\/get_icons.rb"/ruby "$SRCDIR\/get_icons.rb"/g' $WORKDIR/taginfo/sources/projects/update.sh
+# sed -i -e 's/run_ruby "$SRCDIR\/update_characters.rb"/ruby "$SRCDIR\/update_characters.rb"/g' $WORKDIR/taginfo/sources/db/update.sh
+# sed -i -e 's/run_ruby "$SRCDIR\/import.rb"/ruby "$SRCDIR\/import.rb"/g' $WORKDIR/taginfo/sources/projects/update.sh
+# sed -i -e 's/run_ruby "$SRCDIR\/parse.rb"/ruby "$SRCDIR\/parse.rb"/g' $WORKDIR/taginfo/sources/projects/update.sh
+# sed -i -e 's/run_ruby "$SRCDIR\/get_icons.rb"/ruby "$SRCDIR\/get_icons.rb"/g' $WORKDIR/taginfo/sources/projects/update.sh
 
 update() {
     echo "Download and update pbf files at $(date +%Y-%m-%d:%H-%M)"
@@ -60,7 +61,10 @@ update() {
     #     $UPDATE_DIR/planet/planet.osm.pbf
 
     # Update local DB
+    sed -i -e 's/set -euo pipefail/set -x/g' $WORKDIR/taginfo/sources/update_all.sh
+
     $WORKDIR/taginfo/sources/update_all.sh $UPDATE_DIR
+
     mv $UPDATE_DIR/*/taginfo-*.db $DATA_DIR/
     mv $UPDATE_DIR/taginfo-*.db $DATA_DIR/
 
@@ -93,4 +97,4 @@ main() {
     continuous_update
 }
 
-main
+update
