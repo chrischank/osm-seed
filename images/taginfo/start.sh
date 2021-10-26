@@ -10,7 +10,7 @@ mkdir -p $DATA_DIR
 grep -v '^ *//' $WORKDIR/taginfo/taginfo-config-example.json |
     jq '.logging.directory                   = "'$UPDATE_DIR'/log"' |
     jq '.paths.download_dir                  = "'$UPDATE_DIR'/download"' |
-    jq '.paths.bin_dir                       = "'$WORKDIR'/taginfo-tools/build/src"' |
+    jq '.paths.bin_dir                       = "'$WORKDIR'/build/src"' |
     jq '.sources.db.planetfile               = "'$UPDATE_DIR'/planet/planet.osm.pbf"' |
     jq '.sources.chronology.osm_history_file = "'$UPDATE_DIR'/planet/history-planet.osh.pbf"' |
     jq '.sources.db.bindir                   = "'$UPDATE_DIR'/build/src"' |
